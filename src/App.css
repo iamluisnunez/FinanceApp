@@ -1,0 +1,9 @@
+body {
+  height: 100vh;
+  margin: 0; /* Remove default margin to ensure full coverage */
+  background-color: #2e2e2e; /* Set your desired background color */
+  color: white;
+}
+button {
+  margin: 15px;
+}
