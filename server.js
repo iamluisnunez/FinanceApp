@@ -1,12 +1,11 @@
-import express from "express";
+const express = require("express");
+const adminRoutes = require("./src/routes/adminRoutes");
 
 const app = express();
 const PORT = 3000;
 
+app.use(express.json());
 app.listen(PORT, () => {
-  console.log("Hello world");
+  console.log(`We are listening on port number ${PORT}`);
 });
-
-app.get("/", (req, res) => {
-  res.send("Hello");
-});
+app.use("/api", adminRoutes);
