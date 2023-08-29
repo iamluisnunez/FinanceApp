@@ -34,7 +34,7 @@ const newUser = (req, res) => {
   if (!re.exec(admin_name)) {
     return res.status(400).send("Email is not in proper form");
   }
-  const insert = `insert into user(uername, password, email) values('${username}', '${hashedPassword}', '${email}')`;
+  const insert = `insert into user(username, password, email) values('${username}', '${hashedPassword}', '${email}')`;
   pool.query(insert, (error, results) => {
     if (error) {
       return res.status(400).json(error["detail"]);
