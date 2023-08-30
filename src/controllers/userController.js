@@ -1,4 +1,5 @@
 const pool = require("../../db");
+const bcrypt = require("bcrypt");
 
 const getUser = (req, res) => {
   pool.query("select * from users", (error, results) => {
@@ -24,14 +25,19 @@ const getSingleUser = (req, res) => {
   );
 };
 
-const newUser = (req, res) => {
+const newUser = async (req, res) => {
   const { username, email, password } = req.body;
+  console.log(username, email, password);
   if (!username || !email || !password) {
     return res.status(400).send("You missed a required field");
   }
   const re =
     /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
-  if (!re.exec(admin_name)) {
+
+  const salt = await bcrypt.genSalt(10);
+  const hashedPassword = await bcrypt.hash(password, salt);
+
+  if (!re.exec(email)) {
     return res.status(400).send("Email is not in proper form");
   }
   const insert = `insert into user(username, password, email) values('${username}', '${hashedPassword}', '${email}')`;
