@@ -7,3 +7,13 @@ body {
 button {
   margin: 15px;
 }
+.navButton {
+  background-color: #ffd858;
+}
+.registerForm {
+  width: 80%;
+  margin: 0px auto;
+}
+#registerForm {
+  justify-content: end;
+}

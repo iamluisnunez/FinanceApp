@@ -11,15 +11,6 @@ const Home = () => {
       <div className="text-center">
         <h1>Welcome to Your Finance Manager</h1>
         <p>Track your finances and stay on top of your budget with our app.</p>
-        <Link to="/login">
-          <button className="btn btn-secondary">Login</button>
-        </Link>
-        <Link to="/signup">
-          <button className="btn btn-secondary">Sign Up</button>
-        </Link>
-        <Link to="/guest">
-          <button className="btn btn-secondary">Continue as Guest</button>
-        </Link>
       </div>
     </div>
   );

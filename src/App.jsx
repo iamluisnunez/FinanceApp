@@ -5,9 +5,15 @@ import Guest from "./Components/Guest"; // I'm assuming you have a Guest compone
 import NotLoggedIn from "./Components/NotLoggedIn";
 import "./App.css";
 import AppRoutes from "./Components/Routes";
+import Header from "./assets/Header";
 
 function App() {
-  return <AppRoutes />;
+  return (
+    <>
+      <Header />
+      <AppRoutes />;
+    </>
+  );
 }
 
 export default App;
