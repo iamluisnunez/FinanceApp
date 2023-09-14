@@ -1,8 +1,11 @@
 const pool = require("../db");
 const bcrypt = require("bcrypt");
 const { user, password } = require("pg/lib/defaults");
+const dotenv = require("dotenv");
+dotenv.config();
+const jwt = require("jsonwebtoken");
 
-const getUser = (req, res) => {
+const getUsers = (req, res) => {
   pool.query("select * from users", (error, results) => {
     if (error) {
       throw error;
@@ -11,10 +14,11 @@ const getUser = (req, res) => {
     }
   });
 };
-
-const getSingleUser = (req, res) => {
+const getSinglePlayer = (req, res) => {
+  //   const str = `Select admin_name from admin where admin_id = ${req.params.id}`
+  //   res.send(req.params.id);
   pool.query(
-    "Select username from users where user_id = $1",
+    "Select * from users where user_id = $1",
     [req.params.id],
     (error, results) => {
       if (error) {
@@ -26,53 +30,40 @@ const getSingleUser = (req, res) => {
   );
 };
 
-const newUser = async (req, res) => {
+const createPlayer = async (req, res) => {
   const { username, email, password } = req.body;
-  console.log(username, email, password);
+
   if (!username || !email || !password) {
-    return res.status(400).send("You missed a required field");
+    return res.status(400).json("A field is missing");
   }
-  const re =
-    /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
+  const bearer = req.headers.authorization.indexOf("Bearer");
 
-  const salt = await bcrypt.genSalt(10);
-  const hashedPassword = await bcrypt.hash(password, salt);
+  if (bearer === 0 && req.headers.authorization) {
+    const token = req.headers.authorization.split(" ")[1];
+    try {
+      const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(password, salt);
+      const insert = `insert into users (username, email, password) values('${username}', '${email}', '${hashedPassword}')`;
 
-  if (!re.exec(email)) {
-    return res.status(400).send("Email is not in proper form");
-  }
-  const insert = `INSERT INTO users (username, password, email) values('${username}', '${hashedPassword}', '${email}')`;
-  pool.query(insert, (error, results) => {
-    if (error) {
-      return res.status(400).json(error["detail"]);
-    } else {
-      return res.status(200).send("Insert into table");
+      pool.query(insert, (error, results) => {
+        if (error) {
+          console.log(error);
+          return res.status(400).json(error);
+        } else {
+          return res.status(200).send("Insert into table");
+        }
+      });
+      return res.status(200).send(decoded);
+    } catch (e) {
+      return res.status(400).json(e.message);
     }
-  });
-};
-
-const login = async (req, res) => {
-  const { username, email } = req.body;
-  if (!username || !email) {
-    return res.status(400).send("Missing username or email");
   }
-  const select = `SELECT FROM users WHERE username = ${username} `;
-  let adminPassword = "";
-  pool.query(select, async (error, results) => {
-    if (error) {
-      return res.status(400).json(error["detail"]);
-    } else {
-      adminPassword = results.rows[0].password;
-    }
-
-    const match = await bcrypt.compare(password, adminPassword);
-    return res.status(200).send(match);
-  });
+  return res.status(200).json(bearer);
 };
 
 module.exports = {
-  getUser,
-  getSingleUser,
-  newUser,
-  login,
+  getUsers,
+  getSinglePlayer,
+  createPlayer,
 };
