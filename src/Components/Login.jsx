@@ -1,8 +1,19 @@
 import React, { useState } from "react";
+import axios from "axios";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const submit = async (e) => {
+    e.preventDefault();
+    const data = new FormData(e.target);
+    const registerData = Object.fromEntries(data);
+    try {
+      await axios.post("http://localhost:3000/users/users", registerData);
+    } catch (e) {
+      console.log(e.response.data);
+    }
+  };
 
   return (
     <div className="container mt-5">
@@ -11,7 +22,7 @@ const Login = () => {
           <div className="card">
             <div className="card-body">
               <h2 className="card-title text-center">Login</h2>
-              <form>
+              <form onSubmit={submit}>
                 <div className="mb-3">
                   <label htmlFor="email" className="form-label">
                     Email address
@@ -23,6 +34,7 @@ const Login = () => {
                     placeholder="Enter your email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
+                    name="email"
                   />
                 </div>
                 <div className="mb-3">
@@ -36,6 +48,7 @@ const Login = () => {
                     placeholder="Enter your password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
+                    name="password"
                   />
                 </div>
                 <button type="submit" className="btn navButton w-100">

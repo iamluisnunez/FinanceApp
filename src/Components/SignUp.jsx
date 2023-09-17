@@ -1,10 +1,22 @@
 // src/components/SignIn.js
 import React, { useState } from "react";
 import "../App.css";
+import axios from "axios";
 
 const SignIn = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+
+  const submit = async (e) => {
+    e.preventDefault();
+    const data = new FormData(e.target);
+    const registerData = Object.fromEntries(data);
+    try {
+      await axios.post("http://localhost:3000/api/admin", registerData);
+    } catch (e) {
+      console.log(e.response.data);
+    }
+  };
 
   return (
     <div className="container mt-5">
@@ -13,7 +25,7 @@ const SignIn = () => {
           <div className="card">
             <div className="card-body">
               <h2 className="card-title text-center">Sign Up</h2>
-              <form>
+              <form onSubmit={submit}>
                 <div className="mb-3">
                   <label htmlFor="email" className="form-label">
                     Email address
@@ -25,6 +37,7 @@ const SignIn = () => {
                     placeholder="Enter your email"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
+                    name="email"
                   />
                 </div>
                 <div className="mb-3">
@@ -38,6 +51,7 @@ const SignIn = () => {
                     placeholder="Enter your password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
+                    name="password"
                   />
                 </div>
                 <button type="submit" className="btn navButton w-100">

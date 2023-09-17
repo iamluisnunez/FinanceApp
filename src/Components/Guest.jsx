@@ -1,8 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css"; // Import Bootstrap CSS
 import "../App.css"; // Import your custom CSS if needed
 import Totals from "./Total";
 import Header from "../assets/Header";
+import "chart.js/auto"; // Import Chart.js
+import { Pie } from "react-chartjs-2"; // Import React ChartJS 2
 
 function ExpenseIncomeApp() {
   const [transactions, setTransactions] = useState([]);
@@ -32,6 +34,36 @@ function ExpenseIncomeApp() {
     );
     setTransactions(updatedTransactions);
   };
+  const [chartData, setChartData] = useState({
+    labels: ["Expenses", "Income"],
+    datasets: [
+      {
+        data: [0, 0], // Initialize with zeros
+        backgroundColor: ["#ff5733", "#33ff57"],
+      },
+    ],
+  });
+  useEffect(() => {
+    // Calculate expenses and income from transactions
+    const totalExpenses = transactions
+      .filter((transaction) => transaction.type === "expense")
+      .reduce((total, transaction) => total + transaction.amount, 0);
+
+    const totalIncome = transactions
+      .filter((transaction) => transaction.type === "income")
+      .reduce((total, transaction) => total + transaction.amount, 0);
+
+    // Update chartData with the calculated values
+    setChartData({
+      labels: ["Expenses", "Income"],
+      datasets: [
+        {
+          data: [totalExpenses, totalIncome],
+          backgroundColor: ["#ff5733", "#33ff57"],
+        },
+      ],
+    });
+  }, [transactions]);
 
   return (
     <>
@@ -94,6 +126,16 @@ function ExpenseIncomeApp() {
               </li>
             ))}
           </ul>
+          <div className="chart">
+            <Pie
+              data={chartData}
+              options={{
+                maintainAspectRatio: false, // This allows you to control the size
+                width: 800, // Set the desired width
+                height: 800, // Set the desired height
+              }}
+            />
+          </div>
         </div>
         <Totals transactions={transactions} />
       </div>
