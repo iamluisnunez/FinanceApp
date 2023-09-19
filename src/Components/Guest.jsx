@@ -34,36 +34,6 @@ function ExpenseIncomeApp() {
     );
     setTransactions(updatedTransactions);
   };
-  const [chartData, setChartData] = useState({
-    labels: ["Expenses", "Income"],
-    datasets: [
-      {
-        data: [0, 0], // Initialize with zeros
-        backgroundColor: ["#ff5733", "#33ff57"],
-      },
-    ],
-  });
-  useEffect(() => {
-    // Calculate expenses and income from transactions
-    const totalExpenses = transactions
-      .filter((transaction) => transaction.type === "expense")
-      .reduce((total, transaction) => total + transaction.amount, 0);
-
-    const totalIncome = transactions
-      .filter((transaction) => transaction.type === "income")
-      .reduce((total, transaction) => total + transaction.amount, 0);
-
-    // Update chartData with the calculated values
-    setChartData({
-      labels: ["Expenses", "Income"],
-      datasets: [
-        {
-          data: [totalExpenses, totalIncome],
-          backgroundColor: ["#ff5733", "#33ff57"],
-        },
-      ],
-    });
-  }, [transactions]);
 
   return (
     <>
@@ -126,16 +96,6 @@ function ExpenseIncomeApp() {
               </li>
             ))}
           </ul>
-          <div className="chart">
-            <Pie
-              data={chartData}
-              options={{
-                maintainAspectRatio: false, // This allows you to control the size
-                width: 800, // Set the desired width
-                height: 800, // Set the desired height
-              }}
-            />
-          </div>
         </div>
         <Totals transactions={transactions} />
       </div>
