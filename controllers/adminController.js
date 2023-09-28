@@ -31,6 +31,23 @@ const getSingleAdmin = (req, res) => {
   );
 };
 
+const deleteUsers = async (req, res) => {
+  const userId = req.params.id;
+  try {
+    const deleteQuery = "DELETE FROM users WHERE user_id = $1";
+    const deleteValues = [userId];
+
+    await pool.query(deleteQuery, deleteValues);
+
+    res.status(204).send(); // 204 No Content indicates successful deletion
+  } catch (error) {
+    console.error("Error deleting admin:", error);
+    res
+      .status(500)
+      .json({ error: "An error occurred while deleting the admin." });
+  }
+};
+
 const newAdmin = async (req, res) => {
   const { admin_name, admin_password, first_name, last_name } = req.body;
   if (!admin_name || !admin_password || !first_name || !last_name) {
@@ -90,4 +107,5 @@ module.exports = {
   getSingleAdmin,
   newAdmin,
   login,
+  deleteUsers,
 };
