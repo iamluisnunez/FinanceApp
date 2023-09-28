@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import "../App.css";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 const SignIn = () => {
   const [username, setUsername] = useState("");
@@ -11,10 +12,19 @@ const SignIn = () => {
     e.preventDefault();
     const data = new FormData(e.target);
     const registerData = Object.fromEntries(data);
+    console.log("register data: ", registerData);
+
     try {
-      await axios.post("http://localhost:3000/api/admin", registerData);
+      await axios.post("http://localhost:3000/users/users", registerData);
+      toast.success("You have been signed up, Please Login");
     } catch (e) {
-      console.log(e.response.data);
+      const error = e.response.data;
+      console.log(error);
+      if (error.includes("already")) {
+        toast.error("This email already exists");
+      } else {
+        toast.error(error);
+      }
     }
   };
 

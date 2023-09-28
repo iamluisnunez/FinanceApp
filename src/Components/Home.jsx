@@ -6,8 +6,10 @@ import { Link } from "react-router-dom";
 import "../App.css";
 
 const Home = () => {
+  document.documentElement.style.overflow = "hidden";
+  document.body.style.overflow = "hidden";
   return (
-    <div className="container mt-5 d-flex justify-content-center align-items-center">
+    <div className="container-fluid d-flex justify-content-center align-items-center vh-100">
       <div className="text-center">
         <h1>Welcome to Your Finance Manager</h1>
         <p>Track your finances and stay on top of your budget with our app.</p>
