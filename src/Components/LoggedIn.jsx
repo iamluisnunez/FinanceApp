@@ -1,15 +1,12 @@
-// Your main component (e.g., LoggedIn.jsx)
-
 import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "chart.js/auto";
 import Totals from "./Total";
 import Header from "../assets/Header";
 import Guest from "./Guest";
-import ExpenseIncomeApp from "./Guest";
 import PieChart from "./PieChart"; // Import the PieChart component
 
-export default function LoggedIn({ transactions }) {
+export default function LoggedIn() {
   const [chartData, setChartData] = useState({
     labels: ["Expenses", "Income"],
     datasets: [
@@ -19,9 +16,36 @@ export default function LoggedIn({ transactions }) {
       },
     ],
   });
+  const [transactions, setTransactions] = useState([]);
+  const [description, setDescription] = useState("");
+  const [amount, setAmount] = useState("");
+  const [type, setType] = useState("expense");
+
+  const handleAddTransaction = () => {
+    if (description.trim() === "" || amount === "") {
+      return;
+    }
+
+    const newTransaction = {
+      id: new Date().getTime(),
+      description,
+      amount: parseFloat(amount),
+      type,
+    };
+
+    setTransactions([...transactions, newTransaction]);
+    setDescription("");
+    setAmount("");
+  };
+  const handleDeleteTransaction = (id) => {
+    const updatedTransactions = transactions.filter(
+      (transaction) => transaction.id !== id
+    );
+    setTransactions(updatedTransactions);
+  };
 
   useEffect(() => {
-    const transactions = ExpenseIncomeApp.transactions;
+    // Calculate totalExpenses and totalIncome from transactions
     const totalExpenses = transactions
       .filter((transaction) => transaction.type === "expense")
       .reduce((total, transaction) => total + transaction.amount, 0);
@@ -30,6 +54,7 @@ export default function LoggedIn({ transactions }) {
       .filter((transaction) => transaction.type === "income")
       .reduce((total, transaction) => total + transaction.amount, 0);
 
+    // Update chartData based on the calculated values
     setChartData({
       labels: ["Expenses", "Income"],
       datasets: [
@@ -39,7 +64,7 @@ export default function LoggedIn({ transactions }) {
         },
       ],
     });
-  }, []);
+  }, [transactions]); // Include transactions as a dependency
 
   return (
     <>

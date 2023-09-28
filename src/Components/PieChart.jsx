@@ -1,5 +1,3 @@
-// PieChart.js
-
 import React from "react";
 import { Pie } from "react-chartjs-2";
 
@@ -17,8 +15,10 @@ function PieChart({ chartData }) {
               position: "right",
             },
           },
-          width: 400,
-          height: 400,
+          layout: {
+            width: 400,
+            height: 400,
+          },
         }}
       />
     </div>
