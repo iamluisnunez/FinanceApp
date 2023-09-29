@@ -3,10 +3,12 @@ import React, { useState } from "react";
 import "../App.css";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 const SignIn = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const navigate = useNavigate()
 
   const submit = async (e) => {
     e.preventDefault();
@@ -17,6 +19,7 @@ const SignIn = () => {
     try {
       await axios.post("http://localhost:3000/users/users", registerData);
       toast.success("You have been signed up, Please Login");
+      navigate("/login")
     } catch (e) {
       const error = e.response.data;
       console.log(error);

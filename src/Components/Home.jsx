@@ -6,8 +6,7 @@ import { Link } from "react-router-dom";
 import "../App.css";
 
 const Home = () => {
-  document.documentElement.style.overflow = "hidden";
-  document.body.style.overflow = "hidden";
+  
   return (
     <div className="container-fluid d-flex justify-content-center align-items-center vh-100">
       <div className="text-center">

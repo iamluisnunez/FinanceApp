@@ -35,6 +35,11 @@ function Header() {
               </li>
             ) : (
               <>
+              <li className={`nav-item`}>
+                  <Link to="/">
+                    <button className="btn navButton">Home</button>
+                  </Link>
+                </li>
                 <li className={`nav-item`}>
                   <Link to="/login">
                     <button className="btn navButton">Login</button>

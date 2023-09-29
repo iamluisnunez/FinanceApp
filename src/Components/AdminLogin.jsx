@@ -39,7 +39,7 @@ const AdminLogin = () => {
         <div className="col-md-6">
           <div className="card">
             <div className="card-body">
-              <h2 className="card-title text-center">Login</h2>
+              <h2 className="card-title text-center">Admin Login</h2>
               <form onSubmit={submit}>
                 <div className="mb-3">
                   <label htmlFor="email" className="form-label">
