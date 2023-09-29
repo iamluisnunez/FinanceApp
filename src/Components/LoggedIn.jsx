@@ -5,6 +5,7 @@ import Totals from "./Total";
 import Header from "../assets/Header";
 import Guest from "./Guest";
 import PieChart from "./PieChart"; // Import the PieChart component
+import { Pie } from "react-chartjs-2";
 
 export default function LoggedIn() {
   const [chartData, setChartData] = useState({
@@ -54,22 +55,20 @@ export default function LoggedIn() {
       .filter((transaction) => transaction.type === "income")
       .reduce((total, transaction) => total + transaction.amount, 0);
 
-    // Update chartData based on the calculated values
-    setChartData({
-      labels: ["Expenses", "Income"],
+    // Update chartData with real data
+    setChartData((prevChartData) => ({
+      ...prevChartData, // Preserve previous chart data properties
       datasets: [
         {
-          data: [totalExpenses, totalIncome],
-          backgroundColor: ["#ff5733", "#33ff57"],
+          ...prevChartData.datasets[0], // Preserve other dataset properties
+          data: [totalExpenses, totalIncome], // Update data values
         },
       ],
-    });
-  }, [transactions]); // Include transactions as a dependency
-
+    }));
+  }, [transactions]);
   return (
     <>
       <Guest />
-      {/* Use the PieChart component and pass chartData as a prop */}
       <PieChart chartData={chartData} />
     </>
   );

@@ -1,14 +1,14 @@
 import React, { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, Navigate, useLocation } from "react-router-dom";
+import Cookies from "js-cookie";
 
 function Header() {
   const [activeLink, setActiveLink] = useState(""); // State to track the active link
   const location = useLocation(); // Get the current location from react-router
+  const Login = Cookies.get("login");
+  console.log(Login);
 
   // Function to handle link click and update the active link state
-  const handleLinkClick = (path) => {
-    setActiveLink(path);
-  };
 
   return (
     <>
@@ -27,32 +27,36 @@ function Header() {
 
         <div className="collapse navbar-collapse" id="registerForm">
           <ul className="navbar-nav mr-auto">
-            <li className={`nav-item ${activeLink === "/" ? "active" : ""}`}>
-              <Link to="/" onClick={() => handleLinkClick("/")}>
-                <button className="btn navButton">Home</button>
-              </Link>
-            </li>
-            <li
-              className={`nav-item ${activeLink === "/login" ? "active" : ""}`}
-            >
-              <Link to="/login" onClick={() => handleLinkClick("/login")}>
-                <button className="btn navButton">Login</button>
-              </Link>
-            </li>
-            <li
-              className={`nav-item ${activeLink === "/guest" ? "active" : ""}`}
-            >
-              <Link to="/guest" onClick={() => handleLinkClick("/guest")}>
-                <button className="btn navButton">Continue as Guest</button>
-              </Link>
-            </li>
-            <li
-              className={`nav-item ${activeLink === "/signup" ? "active" : ""}`}
-            >
-              <Link to="/signup" onClick={() => handleLinkClick("/signup")}>
-                <button className="btn navButton">Sign Up</button>
-              </Link>
-            </li>
+            {Login ? (
+              <li className={`nav-item`}>
+                <Link to="/logout">
+                  <button className="btn navButton">Logout</button>
+                </Link>
+              </li>
+            ) : (
+              <>
+                <li className={`nav-item`}>
+                  <Link to="/login">
+                    <button className="btn navButton">Login</button>
+                  </Link>
+                </li>
+                <li className={`nav-item`}>
+                  <Link to="/signup">
+                    <button className="btn navButton">Sign Up</button>
+                  </Link>
+                </li>
+                <li className={`nav-item`}>
+                  <Link to="/guestfinal">
+                    <button className="btn navButton">Continue as Guest</button>
+                  </Link>
+                </li>
+                <li className={`nav-item`}>
+                  <Link to="/adminlogin">
+                    <button className="btn navButton">Admin Login</button>
+                  </Link>
+                </li>
+              </>
+            )}
           </ul>
         </div>
       </nav>

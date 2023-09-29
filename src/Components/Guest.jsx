@@ -1,18 +1,28 @@
 import React, { useState, useEffect } from "react";
-import "bootstrap/dist/css/bootstrap.min.css"; // Import Bootstrap CSS
-import "../App.css"; // Import your custom CSS if needed
+import "bootstrap/dist/css/bootstrap.min.css";
+import "../App.css";
 import Totals from "./Total";
 import Header from "../assets/Header";
-import "chart.js/auto"; // Import Chart.js
-import { Pie } from "react-chartjs-2"; // Import React ChartJS 2
+import "chart.js/auto";
+import { Pie } from "react-chartjs-2";
+import axios from "axios";
 
 function ExpenseIncomeApp() {
   const [transactions, setTransactions] = useState([]);
   const [description, setDescription] = useState("");
   const [amount, setAmount] = useState("");
   const [type, setType] = useState("expense");
+  const [pieChartData, setPieChartData] = useState({
+    labels: ["Expenses", "Income"],
+    datasets: [
+      {
+        data: [0, 0],
+        backgroundColor: ["#ff5733", "#33ff57"],
+      },
+    ],
+  });
 
-  const handleAddTransaction = () => {
+  const handleAddTransaction = async () => {
     if (description.trim() === "" || amount === "") {
       return;
     }
@@ -24,16 +34,43 @@ function ExpenseIncomeApp() {
       type,
     };
 
-    setTransactions([...transactions, newTransaction]);
-    setDescription("");
-    setAmount("");
+    try {
+      if (type === "income") {
+        await axios.post("http://localhost:3000/users/income", newTransaction);
+      } else if (type === "expense") {
+        await axios.post(
+          "http://localhost:3000/users/expenses",
+          newTransaction
+        );
+      }
+
+      setTransactions([...transactions, newTransaction]);
+      setDescription("");
+      setAmount("");
+    } catch (error) {
+      console.error("Error adding transaction:", error);
+    }
   };
-  const handleDeleteTransaction = (id) => {
-    const updatedTransactions = transactions.filter(
-      (transaction) => transaction.id !== id
-    );
-    setTransactions(updatedTransactions);
-  };
+
+  useEffect(() => {
+    const totalExpenses = transactions
+      .filter((transaction) => transaction.type === "expense")
+      .reduce((total, transaction) => total + transaction.amount, 0);
+
+    const totalIncome = transactions
+      .filter((transaction) => transaction.type === "income")
+      .reduce((total, transaction) => total + transaction.amount, 0);
+
+    setPieChartData({
+      labels: ["Expenses", "Income"],
+      datasets: [
+        {
+          data: [totalExpenses, totalIncome],
+          backgroundColor: ["#ff5733", "#33ff57"],
+        },
+      ],
+    });
+  }, [transactions]);
 
   return (
     <>
@@ -97,6 +134,7 @@ function ExpenseIncomeApp() {
             ))}
           </ul>
         </div>
+        <Pie data={pieChartData} />
         <Totals transactions={transactions} />
       </div>
     </>

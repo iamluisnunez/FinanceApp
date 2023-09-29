@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import Cookies from "js-cookie";
 
-const Login = () => {
+const AdminLogin = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
@@ -16,7 +16,7 @@ const Login = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:3000/users/login",
+        "http://localhost:3000/api/login",
         registerData
       );
       toast.success("Logging In");
@@ -24,7 +24,7 @@ const Login = () => {
       d.setTime((d.getTime + 59 * 60) * 1000);
 
       Cookies.set("login", response.data, { expires: d });
-      navigate("/loggedin");
+      navigate("/admin");
       //navigate("/loggedin");
     } catch (e) {
       const error = e.response.data;
@@ -52,7 +52,7 @@ const Login = () => {
                     placeholder="Enter your email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    name="email"
+                    name="admin_name"
                   />
                 </div>
                 <div className="mb-3">
@@ -66,7 +66,7 @@ const Login = () => {
                     placeholder="Enter your password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    name="password"
+                    name="admin_password"
                   />
                 </div>
                 <button type="submit" className="btn navButton w-100">
@@ -80,5 +80,4 @@ const Login = () => {
     </div>
   );
 };
-
-export default Login;
+export default AdminLogin;
