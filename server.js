@@ -1,6 +1,6 @@
 const express = require("express");
-const adminRoutes = require("./routes/adminRoutes");
-const userRoutes = require("./routes/userRoutes");
+const adminRoutes = require("./adminRoutes");
+const userRoutes = require("./userRoutes");
 const cors = require("cors");
 // app.use(cors());
 
