@@ -153,7 +153,7 @@ const createExpense = async (req, res) => {
   try {
     // Insert the expense record into your database
     const insertQuery = `
-      INSERT INTO expenses (user_id, description, amount)
+      INSERT INTO expense (user_id, description, amount)
       VALUES ($1, $2, $3)
       RETURNING *;`;
 

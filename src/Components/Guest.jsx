@@ -51,6 +51,19 @@ function ExpenseIncomeApp() {
       console.error("Error adding transaction:", error);
     }
   };
+  const handleDeleteTransaction = (transactionId) => {
+    try {
+      // Make a copy of the current transactions array and filter out the one to be deleted.
+      const updatedTransactions = transactions.filter(
+        (transaction) => transaction.id !== transactionId
+      );
+
+      // Update the transactions state with the filtered array.
+      setTransactions(updatedTransactions);
+    } catch (error) {
+      console.error("Error deleting transaction:", error);
+    }
+  };
 
   useEffect(() => {
     const totalExpenses = transactions
