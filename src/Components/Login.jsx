@@ -7,6 +7,7 @@ import Cookies from "js-cookie";
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [userId, setUserId] = useState("");
   const navigate = useNavigate();
   const submit = async (e) => {
     e.preventDefault();
@@ -19,13 +20,15 @@ const Login = () => {
         "http://localhost:3000/users/login",
         registerData
       );
+
+      // Store user_id in a cookie
+      Cookies.set("user_id", response.data.user_id);
       toast.success("Logging In");
       let d = new Date();
-      d.setTime((d.getTime + 59 * 60) * 1000);
-
+      d.setTime((d.getTime() + 59 * 60) * 1000);
       Cookies.set("login", response.data, { expires: d });
+
       navigate("/loggedin");
-      //navigate("/loggedin");
     } catch (e) {
       const error = e.response.data;
       console.log(error);

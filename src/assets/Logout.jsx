@@ -6,6 +6,7 @@ const Logout = () => {
   const navigate = useNavigate();
   const logUserOut = () => {
     Cookies.remove("login");
+    Cookies.remove("user_id");
     navigate("/");
   };
   return (

@@ -15,6 +15,30 @@ const getUsers = (req, res) => {
   });
 };
 
+const getUserId = (req, res) => {
+  const { email } = req.body; // Assuming you're sending the email in the request body
+
+  pool.query(
+    "SELECT user_id FROM users WHERE email = $1",
+    [email],
+    (error, results) => {
+      if (error) {
+        console.error("Error retrieving user_id:", error);
+        return res
+          .status(500)
+          .json({ error: "An error occurred while retrieving user_id." });
+      }
+
+      if (results.rows.length === 0) {
+        return res.status(404).json({ error: "User not found." });
+      }
+
+      const user_id = results.rows[0].user_id;
+      res.status(200).json({ user_id });
+    }
+  );
+};
+
 const getSinglePlayer = (req, res) => {
   //   const str = `Select admin_name from admin where admin_id = ${req.params.id}`
   //   res.send(req.params.id);
@@ -71,37 +95,41 @@ const deleteUsers = async (req, res) => {
   }
 };
 const login = async (req, res) => {
-  const findPassword = `Select password from users where email = '${req.body.email}'`;
-  let _password_ = "";
-  pool.query(findPassword, async (error, results) => {
+  const findUser = `SELECT user_id, password FROM users WHERE email = '${req.body.email}'`;
+  pool.query(findUser, async (error, results) => {
     if (error) {
       return res.status(400).json(error);
     } else if (!results.rows.length) {
       return res.status(400).send("User Not Found");
     } else {
-      _password_ = results.rows[0];
-      console.log(_password_);
+      const user = results.rows[0];
+      const { user_id, password } = user;
+
+      const match = await bcrypt.compare(req.body.password, password);
+
+      if (match) {
+        const accessToken = jwt.sign(
+          {
+            user_id: user_id, // Include user_id in the payload
+            email: req.body.email,
+          },
+          process.env.ACCESS_TOKEN_SECRET,
+          { expiresIn: "15m" }
+        );
+        return res.status(200).json({ accessToken, user_id }); // Return user_id along with access token
+      } else {
+        return res.status(401).send("Invalid Password");
+      }
     }
-    const match = await bcrypt.compare(req.body.password, _password_.password);
-    if (match) {
-      const accessToken = jwt.sign(
-        {
-          email: req.body.email,
-        },
-        process.env.ACCESS_TOKEN_SECRET,
-        { expiresIn: "15m" }
-      );
-      return res.status(200).json(accessToken);
-    }
-    return res.status(401).send("Invalid Password");
   });
 };
+
 // userController.js
 
 // Function to create a new income record for a user
 const createIncome = async (req, res) => {
   try {
-    const { user_id, description, amount, date } = req.body;
+    const { userId, description, amount, date } = req.body;
 
     // Store the income record in the database
     // Example SQL query:
@@ -110,7 +138,7 @@ const createIncome = async (req, res) => {
       VALUES ($1, $2, $3, $4)
     `;
 
-    const insertValues = [user_id, description, amount, date];
+    const insertValues = [userId, description, amount, date];
 
     await pool.query(insertQuery, insertValues);
 
@@ -137,7 +165,7 @@ const getIncome = async (req, res) => {
     const selectValues = [user_id];
 
     const results = await pool.query(selectQuery, selectValues);
-
+    console.log(results.rows);
     res.status(200).json(results.rows);
   } catch (error) {
     console.error("Error retrieving income records:", error);
@@ -200,4 +228,5 @@ module.exports = {
   createExpense,
   getExpenses,
   getIncome,
+  getUserId,
 };

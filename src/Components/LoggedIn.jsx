@@ -6,8 +6,10 @@ import Header from "../assets/Header";
 import Guest from "./Guest";
 import PieChart from "./PieChart"; // Import the PieChart component
 import { Pie } from "react-chartjs-2";
+import Cookies from "js-cookie";
 
 export default function LoggedIn() {
+  console.log(Cookies.get("user_id"));
   const [chartData, setChartData] = useState({
     labels: ["Expenses", "Income"],
     datasets: [
@@ -21,29 +23,6 @@ export default function LoggedIn() {
   const [description, setDescription] = useState("");
   const [amount, setAmount] = useState("");
   const [type, setType] = useState("expense");
-
-  const handleAddTransaction = () => {
-    if (description.trim() === "" || amount === "") {
-      return;
-    }
-
-    const newTransaction = {
-      id: new Date().getTime(),
-      description,
-      amount: parseFloat(amount),
-      type,
-    };
-
-    setTransactions([...transactions, newTransaction]);
-    setDescription("");
-    setAmount("");
-  };
-  const handleDeleteTransaction = (id) => {
-    const updatedTransactions = transactions.filter(
-      (transaction) => transaction.id !== id
-    );
-    setTransactions(updatedTransactions);
-  };
 
   useEffect(() => {
     // Calculate totalExpenses and totalIncome from transactions

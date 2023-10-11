@@ -6,12 +6,16 @@ import Header from "../assets/Header";
 import "chart.js/auto";
 import { Pie } from "react-chartjs-2";
 import axios from "axios";
+import Cookies from "js-cookie";
 
 function ExpenseIncomeApp() {
+  const [expenses, setExpenses] = useState([]);
+  const [income, setIncome] = useState([]);
   const [transactions, setTransactions] = useState([]);
   const [description, setDescription] = useState("");
   const [amount, setAmount] = useState("");
   const [type, setType] = useState("expense");
+  const user_id = Cookies.get("user_id");
   const [pieChartData, setPieChartData] = useState({
     labels: ["Expenses", "Income"],
     datasets: [
@@ -21,6 +25,28 @@ function ExpenseIncomeApp() {
       },
     ],
   });
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const expenseResponse = await axios.get(
+          `http://localhost:3000/users/users/expenses/${user_id}`
+        );
+        setExpenses(expenseResponse.data);
+        const incomeResponse = await axios.get(
+          `http://localhost:3000/users/users/income/${user_id}`
+        );
+        setIncome(incomeResponse.data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData(); // Fetch expenses and income when the component mounts
+  }, []);
+  useEffect(() => {
+    console.log("Expenses:", expenses);
+    console.log("Income:", income);
+  }, [expenses, income]);
 
   const handleAddTransaction = async () => {
     if (description.trim() === "" || amount === "") {
@@ -28,7 +54,7 @@ function ExpenseIncomeApp() {
     }
 
     const newTransaction = {
-      id: new Date().getTime(),
+      userId: user_id,
       description,
       amount: parseFloat(amount),
       type,
@@ -37,11 +63,13 @@ function ExpenseIncomeApp() {
     try {
       if (type === "income") {
         await axios.post("http://localhost:3000/users/income", newTransaction);
+        fetchIncome();
       } else if (type === "expense") {
         await axios.post(
           "http://localhost:3000/users/expenses",
           newTransaction
         );
+        fetchExpenses();
       }
 
       setTransactions([...transactions, newTransaction]);
