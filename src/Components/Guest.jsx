@@ -25,6 +25,7 @@ function ExpenseIncomeApp() {
       },
     ],
   });
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -32,6 +33,7 @@ function ExpenseIncomeApp() {
           `http://localhost:3000/users/users/expenses/${user_id}`
         );
         setExpenses(expenseResponse.data);
+
         const incomeResponse = await axios.get(
           `http://localhost:3000/users/users/income/${user_id}`
         );
@@ -43,10 +45,6 @@ function ExpenseIncomeApp() {
 
     fetchData(); // Fetch expenses and income when the component mounts
   }, []);
-  useEffect(() => {
-    console.log("Expenses:", expenses);
-    console.log("Income:", income);
-  }, [expenses, income]);
 
   const handleAddTransaction = async () => {
     if (description.trim() === "" || amount === "") {
@@ -63,13 +61,11 @@ function ExpenseIncomeApp() {
     try {
       if (type === "income") {
         await axios.post("http://localhost:3000/users/income", newTransaction);
-        fetchIncome();
       } else if (type === "expense") {
         await axios.post(
           "http://localhost:3000/users/expenses",
           newTransaction
         );
-        fetchExpenses();
       }
 
       setTransactions([...transactions, newTransaction]);
@@ -79,14 +75,12 @@ function ExpenseIncomeApp() {
       console.error("Error adding transaction:", error);
     }
   };
+
   const handleDeleteTransaction = (transactionId) => {
     try {
-      // Make a copy of the current transactions array and filter out the one to be deleted.
       const updatedTransactions = transactions.filter(
         (transaction) => transaction.id !== transactionId
       );
-
-      // Update the transactions state with the filtered array.
       setTransactions(updatedTransactions);
     } catch (error) {
       console.error("Error deleting transaction:", error);
@@ -151,23 +145,40 @@ function ExpenseIncomeApp() {
           </button>
         </div>
         <div className="transaction-list mt-4">
-          <h2>Transactions</h2>
+          <h2>Expenses</h2>
           <ul className="list-group">
-            {transactions.map((transaction) => (
+            {expenses.map((expense) => (
               <li
-                key={transaction.id}
-                className={`list-group-item ${
-                  transaction.type === "expense"
-                    ? "list-group-item-danger"
-                    : "list-group-item-success"
-                } d-flex justify-content-between align-items-center`}
+                key={expense.id}
+                className="list-group-item list-group-item-danger d-flex justify-content-between align-items-center"
               >
                 <div>
-                  {transaction.description}: {transaction.amount}
+                  {expense.description}: {expense.amount}
                 </div>
                 <button
                   className="btn btn-danger btn-sm"
-                  onClick={() => handleDeleteTransaction(transaction.id)}
+                  onClick={() => handleDeleteTransaction(expense.id)}
+                >
+                  Delete
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div className="transaction-list mt-4">
+          <h2>Income</h2>
+          <ul className="list-group">
+            {income.map((incomeItem) => (
+              <li
+                key={incomeItem.id}
+                className="list-group-item list-group-item-success d-flex justify-content-between align-items-center"
+              >
+                <div>
+                  {incomeItem.description}: {incomeItem.amount}
+                </div>
+                <button
+                  className="btn btn-danger btn-sm"
+                  onClick={() => handleDeleteTransaction(incomeItem.id)}
                 >
                   Delete
                 </button>

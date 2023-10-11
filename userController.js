@@ -203,7 +203,7 @@ const getExpenses = async (req, res) => {
 
     // Retrieve income records for the specified user
     // Example SQL query:
-    const selectQuery = "SELECT * FROM income WHERE user_id = $1";
+    const selectQuery = "SELECT * FROM expense WHERE user_id = $1";
 
     const selectValues = [user_id];
 
