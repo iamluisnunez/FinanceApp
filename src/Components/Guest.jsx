@@ -6,12 +6,16 @@ import Header from "../assets/Header";
 import "chart.js/auto";
 import { Pie } from "react-chartjs-2";
 import axios from "axios";
+import Cookies from "js-cookie";
 
 function ExpenseIncomeApp() {
+  const [expenses, setExpenses] = useState([]);
+  const [income, setIncome] = useState([]);
   const [transactions, setTransactions] = useState([]);
   const [description, setDescription] = useState("");
   const [amount, setAmount] = useState("");
   const [type, setType] = useState("expense");
+  const user_id = Cookies.get("user_id");
   const [pieChartData, setPieChartData] = useState({
     labels: ["Expenses", "Income"],
     datasets: [
@@ -22,13 +26,33 @@ function ExpenseIncomeApp() {
     ],
   });
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const expenseResponse = await axios.get(
+          `http://localhost:3000/users/users/expenses/${user_id}`
+        );
+        setExpenses(expenseResponse.data);
+
+        const incomeResponse = await axios.get(
+          `http://localhost:3000/users/users/income/${user_id}`
+        );
+        setIncome(incomeResponse.data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData(); // Fetch expenses and income when the component mounts
+  }, []);
+
   const handleAddTransaction = async () => {
     if (description.trim() === "" || amount === "") {
       return;
     }
 
     const newTransaction = {
-      id: new Date().getTime(),
+      userId: user_id,
       description,
       amount: parseFloat(amount),
       type,
@@ -49,6 +73,17 @@ function ExpenseIncomeApp() {
       setAmount("");
     } catch (error) {
       console.error("Error adding transaction:", error);
+    }
+  };
+
+  const handleDeleteTransaction = (transactionId) => {
+    try {
+      const updatedTransactions = transactions.filter(
+        (transaction) => transaction.id !== transactionId
+      );
+      setTransactions(updatedTransactions);
+    } catch (error) {
+      console.error("Error deleting transaction:", error);
     }
   };
 
@@ -110,23 +145,40 @@ function ExpenseIncomeApp() {
           </button>
         </div>
         <div className="transaction-list mt-4">
-          <h2>Transactions</h2>
+          <h2>Expenses</h2>
           <ul className="list-group">
-            {transactions.map((transaction) => (
+            {expenses.map((expense) => (
               <li
-                key={transaction.id}
-                className={`list-group-item ${
-                  transaction.type === "expense"
-                    ? "list-group-item-danger"
-                    : "list-group-item-success"
-                } d-flex justify-content-between align-items-center`}
+                key={expense.id}
+                className="list-group-item list-group-item-danger d-flex justify-content-between align-items-center"
               >
                 <div>
-                  {transaction.description}: {transaction.amount}
+                  {expense.description}: {expense.amount}
                 </div>
                 <button
                   className="btn btn-danger btn-sm"
-                  onClick={() => handleDeleteTransaction(transaction.id)}
+                  onClick={() => handleDeleteTransaction(expense.id)}
+                >
+                  Delete
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div className="transaction-list mt-4">
+          <h2>Income</h2>
+          <ul className="list-group">
+            {income.map((incomeItem) => (
+              <li
+                key={incomeItem.id}
+                className="list-group-item list-group-item-success d-flex justify-content-between align-items-center"
+              >
+                <div>
+                  {incomeItem.description}: {incomeItem.amount}
+                </div>
+                <button
+                  className="btn btn-danger btn-sm"
+                  onClick={() => handleDeleteTransaction(incomeItem.id)}
                 >
                   Delete
                 </button>
