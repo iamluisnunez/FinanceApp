@@ -16,6 +16,7 @@ function ExpenseIncomeApp() {
   const [amount, setAmount] = useState("");
   const [type, setType] = useState("expense");
   const user_id = Cookies.get("user_id");
+
   const [pieChartData, setPieChartData] = useState({
     labels: ["Expenses", "Income"],
     datasets: [
@@ -42,6 +43,24 @@ function ExpenseIncomeApp() {
         console.error("Error fetching data:", error);
       }
     };
+    // Calculate initial pie chart data here
+    const totalExpenses = expenses.reduce(
+      (total, expense) => total + expense.amount,
+      0
+    );
+    const totalIncome = income.reduce(
+      (total, incomeItem) => total + incomeItem.amount,
+      0
+    );
+    setPieChartData({
+      labels: ["Expenses", "Income"],
+      datasets: [
+        {
+          data: [totalExpenses, totalIncome],
+          backgroundColor: ["#ff5733", "#33ff57"],
+        },
+      ],
+    });
 
     fetchData(); // Fetch expenses and income when the component mounts
   }, []);
@@ -186,7 +205,6 @@ function ExpenseIncomeApp() {
             ))}
           </ul>
         </div>
-        <Pie data={pieChartData} />
         <Totals transactions={transactions} />
       </div>
     </>

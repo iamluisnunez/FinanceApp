@@ -174,6 +174,26 @@ const getIncome = async (req, res) => {
       .json({ error: "An error occurred while retrieving income records." });
   }
 };
+const deleteIncome = async (req, res) => {
+  try {
+    const user_id = req.params.user_id;
+
+    // Retrieve income records for the specified user
+    // Example SQL query:
+    const selectQuery = "DELETE FROM income WHERE user_id = $1";
+
+    const selectValues = [user_id];
+
+    const results = await pool.query(selectQuery, selectValues);
+    console.log(results.rows);
+    res.status(200).json(results.rows);
+  } catch (error) {
+    console.error("Error retrieving income records:", error);
+    res
+      .status(500)
+      .json({ error: "An error occurred while retrieving income records." });
+  }
+};
 
 const createExpense = async (req, res) => {
   const { userId, description, amount } = req.body;
@@ -209,6 +229,26 @@ const getExpenses = async (req, res) => {
 
     const results = await pool.query(selectQuery, selectValues);
 
+    res.status(200).json(results.rows);
+  } catch (error) {
+    console.error("Error retrieving income records:", error);
+    res
+      .status(500)
+      .json({ error: "An error occurred while retrieving income records." });
+  }
+};
+const deleteExpense = async (req, res) => {
+  try {
+    const user_id = req.params.user_id;
+
+    // Retrieve income records for the specified user
+    // Example SQL query:
+    const selectQuery = "DELETE FROM income WHERE user_id = $1";
+
+    const selectValues = [user_id];
+
+    const results = await pool.query(selectQuery, selectValues);
+    console.log(results.rows);
     res.status(200).json(results.rows);
   } catch (error) {
     console.error("Error retrieving income records:", error);
