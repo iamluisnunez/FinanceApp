@@ -14,4 +14,6 @@ router.post("/income", userController.createIncome);
 router.post("/expenses", userController.createExpense);
 
 router.delete("/users/:id", userController.deleteUsers);
+router.delete("/income", userController.deleteExpense);
+router.delete("/expense", userController.deleteExpense);
 module.exports = router;

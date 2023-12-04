@@ -17,54 +17,6 @@ function ExpenseIncomeApp() {
   const [type, setType] = useState("expense");
   const user_id = Cookies.get("user_id");
 
-  const [pieChartData, setPieChartData] = useState({
-    labels: ["Expenses", "Income"],
-    datasets: [
-      {
-        data: [0, 0],
-        backgroundColor: ["#ff5733", "#33ff57"],
-      },
-    ],
-  });
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const expenseResponse = await axios.get(
-          `http://localhost:3000/users/users/expenses/${user_id}`
-        );
-        setExpenses(expenseResponse.data);
-
-        const incomeResponse = await axios.get(
-          `http://localhost:3000/users/users/income/${user_id}`
-        );
-        setIncome(incomeResponse.data);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-    // Calculate initial pie chart data here
-    const totalExpenses = expenses.reduce(
-      (total, expense) => total + expense.amount,
-      0
-    );
-    const totalIncome = income.reduce(
-      (total, incomeItem) => total + incomeItem.amount,
-      0
-    );
-    setPieChartData({
-      labels: ["Expenses", "Income"],
-      datasets: [
-        {
-          data: [totalExpenses, totalIncome],
-          backgroundColor: ["#ff5733", "#33ff57"],
-        },
-      ],
-    });
-
-    fetchData(); // Fetch expenses and income when the component mounts
-  }, []);
-
   const handleAddTransaction = async () => {
     if (description.trim() === "" || amount === "") {
       return;
@@ -78,15 +30,6 @@ function ExpenseIncomeApp() {
     };
 
     try {
-      if (type === "income") {
-        await axios.post("http://localhost:3000/users/income", newTransaction);
-      } else if (type === "expense") {
-        await axios.post(
-          "http://localhost:3000/users/expenses",
-          newTransaction
-        );
-      }
-
       setTransactions([...transactions, newTransaction]);
       setDescription("");
       setAmount("");
@@ -97,6 +40,7 @@ function ExpenseIncomeApp() {
 
   const handleDeleteTransaction = (transactionId) => {
     try {
+      // Filter out the transaction to be deleted from the local state
       const updatedTransactions = transactions.filter(
         (transaction) => transaction.id !== transactionId
       );
@@ -115,15 +59,8 @@ function ExpenseIncomeApp() {
       .filter((transaction) => transaction.type === "income")
       .reduce((total, transaction) => total + transaction.amount, 0);
 
-    setPieChartData({
-      labels: ["Expenses", "Income"],
-      datasets: [
-        {
-          data: [totalExpenses, totalIncome],
-          backgroundColor: ["#ff5733", "#33ff57"],
-        },
-      ],
-    });
+    setExpensesTotal(totalExpenses);
+    setIncomeTotal(totalIncome);
   }, [transactions]);
 
   return (
@@ -166,43 +103,47 @@ function ExpenseIncomeApp() {
         <div className="transaction-list mt-4">
           <h2>Expenses</h2>
           <ul className="list-group">
-            {expenses.map((expense) => (
-              <li
-                key={expense.id}
-                className="list-group-item list-group-item-danger d-flex justify-content-between align-items-center"
-              >
-                <div>
-                  {expense.description}: {expense.amount}
-                </div>
-                <button
-                  className="btn btn-danger btn-sm"
-                  onClick={() => handleDeleteTransaction(expense.id)}
+            {transactions
+              .filter((transaction) => transaction.type === "expense")
+              .map((expense) => (
+                <li
+                  key={expense.id}
+                  className="list-group-item list-group-item-danger d-flex justify-content-between align-items-center"
                 >
-                  Delete
-                </button>
-              </li>
-            ))}
+                  <div>
+                    {expense.description}: {expense.amount}
+                  </div>
+                  <button
+                    className="btn btn-danger btn-sm"
+                    onClick={() => handleDeleteTransaction(expense.id)}
+                  >
+                    Delete
+                  </button>
+                </li>
+              ))}
           </ul>
         </div>
         <div className="transaction-list mt-4">
           <h2>Income</h2>
           <ul className="list-group">
-            {income.map((incomeItem) => (
-              <li
-                key={incomeItem.id}
-                className="list-group-item list-group-item-success d-flex justify-content-between align-items-center"
-              >
-                <div>
-                  {incomeItem.description}: {incomeItem.amount}
-                </div>
-                <button
-                  className="btn btn-danger btn-sm"
-                  onClick={() => handleDeleteTransaction(incomeItem.id)}
+            {transactions
+              .filter((transaction) => transaction.type === "income")
+              .map((incomeItem) => (
+                <li
+                  key={incomeItem.id}
+                  className="list-group-item list-group-item-success d-flex justify-content-between align-items-center"
                 >
-                  Delete
-                </button>
-              </li>
-            ))}
+                  <div>
+                    {incomeItem.description}: {incomeItem.amount}
+                  </div>
+                  <button
+                    className="btn btn-danger btn-sm"
+                    onClick={() => handleDeleteTransaction(incomeItem.id)}
+                  >
+                    Delete
+                  </button>
+                </li>
+              ))}
           </ul>
         </div>
         <Totals transactions={transactions} />

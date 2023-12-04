@@ -48,7 +48,6 @@ export default function LoggedIn() {
   return (
     <>
       <Guest />
-      <PieChart chartData={chartData} />
     </>
   );
 }
