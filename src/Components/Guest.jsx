@@ -23,6 +23,7 @@ function ExpenseIncomeApp() {
     }
 
     const newTransaction = {
+      id: Math.random().toString(36).substring(7), // Unique identifier (not ideal for production)
       userId: user_id,
       description,
       amount: parseFloat(amount),
@@ -44,6 +45,8 @@ function ExpenseIncomeApp() {
       const updatedTransactions = transactions.filter(
         (transaction) => transaction.id !== transactionId
       );
+
+      // Update the state with the filtered transactions
       setTransactions(updatedTransactions);
     } catch (error) {
       console.error("Error deleting transaction:", error);
@@ -59,8 +62,8 @@ function ExpenseIncomeApp() {
       .filter((transaction) => transaction.type === "income")
       .reduce((total, transaction) => total + transaction.amount, 0);
 
-    setExpensesTotal(totalExpenses);
-    setIncomeTotal(totalIncome);
+    setExpenses(totalExpenses);
+    setIncome(totalIncome);
   }, [transactions]);
 
   return (
@@ -100,6 +103,10 @@ function ExpenseIncomeApp() {
             Add
           </button>
         </div>
+
+        {/*
+        Expenses card
+       */}
         <div className="transaction-list mt-4">
           <h2>Expenses</h2>
           <ul className="list-group">
@@ -123,6 +130,9 @@ function ExpenseIncomeApp() {
               ))}
           </ul>
         </div>
+        {/*
+        Income card
+       */}
         <div className="transaction-list mt-4">
           <h2>Income</h2>
           <ul className="list-group">
