@@ -25,7 +25,10 @@ function Header() {
           <span className="navbar-toggler-icon"></span>
         </button>
 
-        <div className="collapse navbar-collapse" id="registerForm">
+        <div
+          className="collapse navbar-collapse justify-content-center"
+          id="registerForm"
+        >
           <ul className="navbar-nav mr-auto">
             {Login ? (
               <li className={`nav-item`}>
@@ -35,7 +38,7 @@ function Header() {
               </li>
             ) : (
               <>
-              <li className={`nav-item`}>
+                <li className={`nav-item`}>
                   <Link to="/">
                     <button className="btn navButton">Home</button>
                   </Link>
@@ -48,11 +51,6 @@ function Header() {
                 <li className={`nav-item`}>
                   <Link to="/signup">
                     <button className="btn navButton">Sign Up</button>
-                  </Link>
-                </li>
-                <li className={`nav-item`}>
-                  <Link to="/guestfinal">
-                    <button className="btn navButton">Continue as Guest</button>
                   </Link>
                 </li>
                 <li className={`nav-item`}>
